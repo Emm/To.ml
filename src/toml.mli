@@ -75,6 +75,7 @@ val mk_int : int -> value
 val mk_float : float -> value
 val mk_string : string -> value
 val mk_date : Unix.tm -> value
+val mk_table : table -> value
 
 (** {3 Prepare lists for insertion as an array } *)
 

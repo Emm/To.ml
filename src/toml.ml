@@ -97,6 +97,7 @@ let mk_int v = TInt v
 let mk_float v = TFloat v
 let mk_string v = TString v
 let mk_date v = TDate v
+let mk_table v = TTable v
 
 let mk_bool_array list = NodeBool list
 let mk_int_array list = NodeInt list
