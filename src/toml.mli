@@ -14,6 +14,9 @@ val from_filename : string -> table
 
 (** {2 General table manipulations } *)
 
+(** Create a empty TOML table *)
+val create : unit -> table
+
 (** Second table is merged into first one, if a key is present in two 
     tables, the second will override the first  *)
 val merge : table -> table -> unit

@@ -13,6 +13,8 @@ let from_string s = parse (Lexing.from_string s)
 let from_channel c = parse (Lexing.from_channel c)
 let from_filename f = from_channel (open_in f)
 
+let create () = Hashtbl.create 0
+
 let get = Hashtbl.find
 
 let merge tbl1 tbl2 =
