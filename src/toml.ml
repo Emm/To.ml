@@ -2,6 +2,10 @@ open TomlType
 
 exception Bad_type of (string * string)
 
+type table = TomlType.tomlTable
+type value = TomlType.tomlValue
+type array = TomlType.tomlNodeArray
+
 (** Parsing functions a TOML file. Return a toml table. *)
 
 let parse lexbuf = TomlParser.toml TomlLexer.tomlex lexbuf
