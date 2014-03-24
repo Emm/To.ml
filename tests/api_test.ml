@@ -1,5 +1,6 @@
 open OUnit
 open Toml
+open TestHelper
 
 let parse = Toml.from_string
 

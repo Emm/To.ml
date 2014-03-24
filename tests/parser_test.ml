@@ -6,6 +6,7 @@ open OUnit
 open TomlType
 open TomlPprint
 open Toml
+open TestHelper
 
 let _ =
   let assert_equal = OUnit.assert_equal ~printer:string_of_val in

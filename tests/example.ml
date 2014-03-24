@@ -2,6 +2,7 @@ open OUnit
 open TomlType
 open TomlPprint
 open Toml
+open TestHelper
 
 (* This test file expects example.toml from official toml repo read *)
 

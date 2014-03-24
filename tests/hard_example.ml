@@ -2,6 +2,7 @@ open OUnit
 open TomlType
 open TomlPprint
 open Toml
+open TestHelper
 
 let error1 ="string = \"Anything other than tabs, spaces and newline after a keygroup or key value pair has ended should produce an error unless it is a comment\"   like this"
 

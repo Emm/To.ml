@@ -1,39 +1,39 @@
 open TomlType
 
-(** Parsing functions a TOML file
-  @return (string, TomlValue) Hashtbl.t
-*)
+exception Bad_type of (string * string)
+
+(** Parsing functions a TOML file. Return a toml table. *)
 
 let parse lexbuf = TomlParser.toml TomlLexer.tomlex lexbuf
 let from_string s = parse (Lexing.from_string s)
 let from_channel c = parse (Lexing.from_channel c)
 let from_filename f = from_channel (open_in f)
 
-(**
- * Functions to get the list of direct values / sub tables of a tomlTable
- *)
-
-let toml_to_list toml = Hashtbl.fold (fun k v acc -> (k, v)::acc) toml []
-
-let tables_to_list toml =
-  Hashtbl.fold (fun k v acc ->
-                match v with
-                | TTable v -> (k, v) :: acc
-                | _ -> acc) toml []
-
-let values_to_list toml =
-  Hashtbl.fold (fun k v acc ->
-                match v with
-                | TTable _ -> acc
-                | _ -> (k, v) :: acc) toml []
-
-
 let get = Hashtbl.find
-exception Bad_type of (string * string)
 
-(**
- * Functions to retreive values of an expected type
- *)
+let merge tbl1 tbl2 =
+  Hashtbl.iter (fun k v -> Hashtbl.replace tbl1 k v) tbl2
+
+let rec rec_merge tbl1 tbl2 =
+  let concat_arr arr1 arr2 =
+  match arr1, arr2 with
+  | NodeEmpty, _ -> arr2
+  | _, NodeEmpty -> arr1
+  | NodeArray n1, NodeArray n2 -> NodeArray (List.rev_append n1 n2)
+  | NodeBool n1, NodeBool n2 -> NodeBool (List.rev_append n1 n2)
+  | NodeInt n1, NodeInt n2 -> NodeInt (List.rev_append n1 n2)
+  | NodeFloat n1, NodeFloat n2 -> NodeFloat (List.rev_append n1 n2)
+  | NodeString n1, NodeString n2 -> NodeString (List.rev_append n1 n2)
+  | NodeDate n1, NodeDate n2 -> NodeDate (List.rev_append n1 n2)
+  | _, _ -> raise (Bad_type ("", ""))
+  in 
+  Hashtbl.iter (fun k v ->
+                try match Hashtbl.find tbl1 k, v with
+                    | TArray a, TArray a' ->
+                       Hashtbl.add tbl1 k @@ TArray (concat_arr a a')
+                    | TTable t, TTable t' -> rec_merge t t'
+                    | _, _ -> Hashtbl.replace tbl1 k v
+                with Not_found -> Hashtbl.add tbl1 k v) tbl2
 
 let get_table toml key = match (get toml key) with
   | TTable(tbl) -> tbl
@@ -59,10 +59,6 @@ let get_date toml key = match get toml key with
   | TDate d -> d
   | _ -> raise (Bad_type (key, "date"))
 
-(**
- * Functions to retreive OCaml primitive type list
- *)
-
 let get_bool_list toml key = match get toml key with
   | TArray (NodeBool b) -> b
   | TArray (NodeEmpty) -> []
@@ -87,3 +83,21 @@ let get_date_list toml key = match get toml key with
   | TArray (NodeDate d) -> d
   | TArray (NodeEmpty) -> []
   | _ -> raise (Bad_type (key, "date array"))
+
+let add_value = Hashtbl.add
+
+let mk_bool v = TBool v
+let mk_int v = TInt v
+let mk_float v = TFloat v
+let mk_string v = TString v
+let mk_date v = TDate v
+
+let mk_bool_array list = NodeBool list
+let mk_int_array list = NodeInt list
+let mk_float_array list = NodeFloat list
+let mk_string_array list = NodeString list
+let mk_date_array list = NodeDate list
+
+let mk_array_array list = NodeArray list
+
+let mk_array array = TArray array
