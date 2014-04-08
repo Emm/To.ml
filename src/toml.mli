@@ -1,6 +1,6 @@
 (** The TOML parser interface *)
 
-(** [t] is **NOT** a persistent data structure  *)
+(** [table] is {b NOT } a persistent data structure  *)
 type table = TomlType.tomlTable
 type value = TomlType.tomlValue
 type array = TomlType.tomlNodeArray
@@ -29,8 +29,8 @@ val rec_merge : table -> table -> unit
     These functions take the toml table as first argument and the key of 
     value as second one. They have three behaviors:{ul list}
     - The key is found and the type is good. The primitive value is returned
-    - The key is not found: raise Not_found
-    - The key is found but the type doesn't match: raise Bad_type *)
+    - The key is not found: raise [Not_found]
+    - The key is found but the type doesn't match: raise [Bad_type] *)
 
 (** Bad_type expections carry (key, expected type) data *)
 exception Bad_type of (string * string)
@@ -60,7 +60,7 @@ val get_date_list : table -> string -> Unix.tm list
 
 (** {2 Adding a value to a TOML table } *)
 
-(** In order to add a value into a table, you must follow these steps:
+(** In order to add a value into a [table], you must follow these steps:
     {ol list}
     - prepare the value for insertion, using [mk_x] functions
     - add your preparation using [add_value] function *)
@@ -100,5 +100,5 @@ val mk_array : array -> value
 
 (** {3 Insert prepared value } *)
 
-(** Add a tomlValue to a tomlTable *)
+(** Add a [value] to a [table] *)
 val add_value : table -> string -> value -> unit
